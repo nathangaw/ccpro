@@ -32,7 +32,7 @@ var model = {
 	}
 	],
 
-	activeCat: null
+	activeCat: 0
 }
 
 var octopus = {
@@ -45,6 +45,8 @@ var octopus = {
 		}
 
 		viewList.listClick();
+		octopus.retrieveClickedCat();
+		viewList.adminClick();
 	},
 
 	setClickedCat: function(id) {
@@ -62,6 +64,20 @@ var octopus = {
 		catClickToUpdate.clickCount += 1;
 		var newCounter = model.cats[model.activeCat].clickCount;
 		viewActive.updateCounter(newCounter);
+	},
+
+	checkCurrentCat: function() {
+		var currentCat = model.cats[model.activeCat];
+		viewAdmin.render(currentCat);
+	},
+
+	updateValues: function(newName, newImage, newCount) {
+		model.cats[model.activeCat].name = newName;
+		model.cats[model.activeCat].picture = newImage;
+		model.cats[model.activeCat].clickCount = newCount;
+		$('.admin-area').empty();
+		$('.catlist').empty();
+		octopus.init();
 	}
 
 }
@@ -79,7 +95,15 @@ var viewList = {
 			var clickedCatId = target.attr('id');
 			octopus.setClickedCat(clickedCatId);
 		})
+	},
+
+	adminClick: function() {
+		$('.admin-button').click(function() {
+			octopus.checkCurrentCat();
+		})
 	}
+
+
 }
 
 
@@ -104,6 +128,34 @@ var viewActive = {
 
 
 }
+
+var viewAdmin = {
+	render: function(currentCat) {
+		$('.admin-area').html('<h2>Your admin area</h2><form><label for="change-name">Change name to:</label><input id="change-name"><br><label for="change-url">Change image URL to:</label><input id="change-url"><br><label for="change-clicks">Change clickCount to:</label><input id="change-clicks"></form><br><button id="cancel">CANCEL</button><button id="save">SAVE</button>');
+		$('#change-name').val(currentCat.name);
+		$('#change-url').val(currentCat.picture);
+		$('#change-clicks').val(currentCat.clickCount);
+		viewAdmin.adminButtons();
+	},
+
+
+
+	adminButtons: function() {
+		$('#cancel').click(function() {
+			$('.admin-area').empty();
+		});
+		$('#save').click(function() {
+			var newName = $('#change-name').val();
+			var newImage = $('#change-url').val();
+			var newCount = $('#change-clicks').val();
+			octopus.updateValues(newName, newImage, newCount);
+		})
+	}
+
+
+
+}
+
 
 octopus.init();
 
